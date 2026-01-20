@@ -68,4 +68,10 @@ MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xm
 EOF
 update-desktop-database ~/.local/share/applications &>/dev/null
 
+# cursor cli
+curl https://cursor.com/install -fsS | bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+
 echo "Done. Log out/in for the new shell to activate."
