@@ -53,7 +53,7 @@ ZEN_DIR=$HOME/Applications/zen-browser
   mv ~/Applications/zen.linux-x86_64 "$ZEN_DIR"
 }
 grep -qF 'alias zen=' ~/.zshrc 2>/dev/null ||
-  echo "alias zen='$ZEN_DIR/zen-bin'" >>~/.zshrc
+  echo "alias zen='$ZEN_DIR/zen/zen-bin'" >>~/.zshrc
 
 mkdir -p ~/.local/share/applications
 cat >~/.local/share/applications/zen-browser.desktop <<EOF
