@@ -7,20 +7,20 @@ set -euo pipefail
 apt -qq update
 apt -qq install -y curl wget git zsh ca-certificates gnupg lsb-release
 
-# oh-my-zsh once
+# oh-my-zsh setup
 [[ -d $HOME/.oh-my-zsh ]] ||
   CHSH=no RUNZSH=no KEEP_ZSHRC=yes \
   bash <(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended
-
 # default shell
 [[ $(getent passwd "$SUDO_USER" | cut -d: -f7) == "$(command -v zsh)" ]] ||
   usermod -s "$(command -v zsh)" "$SUDO_USER"
-
 # re-exec into zsh
 [[ -n "${ZSH_VERSION:-}" ]] || exec zsh "$0" "$@"
 
+
 # CLI tools
 apt -qq install -y bat eza duf neovim unzip build-essential clang btop
+
 
 # miniconda
 if ! command -v conda &>/dev/null; then
@@ -31,6 +31,27 @@ if ! command -v conda &>/dev/null; then
   source "$HOME/miniconda/etc/profile.d/conda.sh"
   conda init -q zsh
 fi
+
+
+# Docker
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
+
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 
 # desktop extras
 command -v gnome-shell &>/dev/null || exit 0
@@ -43,6 +64,7 @@ if ! command -v 1password &>/dev/null; then
     >/etc/apt/sources.list.d/1password.list
   apt -qq update && apt -qq install -y 1password
 fi
+
 
 # zen-browser
 ZEN_DIR=$HOME/Applications/zen-browser
@@ -67,6 +89,7 @@ Categories=Network;WebBrowser;
 MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;
 EOF
 update-desktop-database ~/.local/share/applications &>/dev/null
+
 
 # cursor cli
 curl https://cursor.com/install -fsS | bash
